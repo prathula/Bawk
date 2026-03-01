@@ -1,5 +1,11 @@
-function required(name: string): string {
-  const value = process.env[name]?.trim();
+const publicEnv = {
+  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL?.trim(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY:
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim(),
+  NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL?.trim(),
+};
+
+function required(value: string | undefined, name: string): string {
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`);
   }
@@ -55,13 +61,16 @@ function resolveSupabaseUrl(rawUrl: string | undefined, anonKey: string): string
   );
 }
 
-const supabaseAnonKey = required("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+const supabaseAnonKey = required(
+  publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY"
+);
 
 export const env = {
   supabaseUrl: resolveSupabaseUrl(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    publicEnv.NEXT_PUBLIC_SUPABASE_URL,
     supabaseAnonKey
   ),
   supabaseAnonKey,
-  apiUrl: process.env.NEXT_PUBLIC_API_URL?.trim() || "http://localhost:8000",
+  apiUrl: publicEnv.NEXT_PUBLIC_API_URL || "http://localhost:8000",
 };
